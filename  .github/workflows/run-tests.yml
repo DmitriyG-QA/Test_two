@@ -1,7 +1,17 @@
-name: Automated tests
+name: Tests for registration
 
 on:
-  push
+  workflow_dispatch:
+    inputs:
+      deployment_target:
+        description: Choose target
+        required: true
+        default:
+        type: choice
+        options:
+          - first_test
+          - second_test
+          - all
 
 jobs:
   test:
@@ -19,4 +29,8 @@ jobs:
       - name: install dependencies
         run: pip install -r requirements.txt
       - name: Run tests
-        run: pytest
+        if: "github.event.inputs.deployment_target == 'first_test'"
+        run: pytest tests/test_button.py::test_join_us --alluredir=allure-results
+      - name: Run tests
+        if: "github.event.inputs.deployment_target == 'second_test'"
+        run: pytest tests/test_button.py::test_join_us_9 --alluredir=allure-results
